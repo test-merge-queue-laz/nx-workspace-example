@@ -1,6 +1,7 @@
 name: Log Merge Group Context
 
 on:
+  pull_request:
   merge_group:
 
 jobs:
