@@ -1,30 +1,52 @@
-name: Log Merge Group Context
+name: Debug Merge Group Context
 
 on:
   merge_group:
 
 jobs:
-  log-context:
+  debug-context:
+    name: Debug Merge Group Context
     runs-on: ubuntu-latest
     steps:
-      - name: Log GitHub Context
+      - name: Log GitHub context using shell
         run: |
-          echo "=== GitHub Context ==="
-          echo "${{ toJson(github) }}" | jq .
-      
-      - name: Log Environment Variables
-        run: |
-          echo "=== Environment Variables ==="
-          printenv | sort
+          echo "=== Event Name ==="
+          echo "Event: ${{ github.event_name }}"
+          
+          echo ""
+          echo "=== Basic Info ==="
+          echo "Repository: ${{ github.repository }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "SHA: ${{ github.sha }}"
+          echo "Ref: ${{ github.ref }}"
+          
+          echo ""
+          echo "=== Merge Group Info ==="
+          echo "Head SHA: ${{ github.event.merge_group.head_sha }}"
+          echo "Base Ref: ${{ github.event.merge_group.base_ref }}"
+          echo "Base SHA: ${{ github.event.merge_group.base_sha }}"
+          
+          echo ""
+          echo "=== Pull Request Info (if available) ==="
+          echo "PR Number: ${{ github.event.merge_group.pull_request.number }}"
+          echo "PR User: ${{ github.event.merge_group.pull_request.user.login }}"
+          echo "PR Title: ${{ github.event.merge_group.pull_request.title }}"
+          
+          echo ""
+          echo "=== Head Commit Info (if available) ==="
+          echo "Commit Author: ${{ github.event.merge_group.head_commit.author.login }}"
+          echo "Commit Message: ${{ github.event.merge_group.head_commit.message }}"
 
-      - name: Log Event Payload
+      - name: Log full event payload
         run: |
-          echo "=== Event Payload ==="
-          cat $GITHUB_EVENT_PATH | jq .
+          echo "=== Full Event Payload ==="
+          echo '${{ toJson(github.event) }}'
 
-      - name: Log Git Commit Info
+      - name: Log environment variables
         run: |
-          git log -n 5 --oneline || echo "Git log not available (no repo cloned)"
-
-      - name: Checkout (if needed)
-        uses: actions/checkout@v4
+          echo "=== GitHub Event Variables ==="
+          echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_SHA: $GITHUB_SHA"
+          echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
+          echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
